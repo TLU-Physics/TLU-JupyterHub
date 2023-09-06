@@ -1,43 +1,26 @@
 # Server IP 40.119.49.252
 
 # TODO: add command to change the server time zone to Central
-
 apt update
 apt upgrade
-wget https://repo.anaconda.com/archive/Anaconda3-2023.03-1-Linux-x86_64.sh
-echo "95102d7c732411f1458a20bdf47e4c1b0b6c8a21a2edfe4052ca370aaae57bab Anaconda3-2023.03-1-Linux-x86_64.sh" > anaconda.sha256sum
+wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh
+echo "589fb34fe73bc303379abbceba50f3131254e85ce4e7cd819ba4276ba29cad16 Anaconda3-2023.07-2-Linux-x86_64.sh" > anaconda.sha256sum
 sha256sum -c anaconda.sha256sum
-bash Anaconda3-2023.03-1-Linux-x86_64.sh -b -p /opt/anaconda3
+bash Anaconda3-2023.07-2-Linux-x86_64.sh -b -p /opt/anaconda3
 cd /opt/anaconda3/bin
-conda install mamba -c conda-forge -n base # got 1.2
+conda install mamba -c conda-forge -n base # got 1.2 last time
 mamba update mamba -c conda-forge # did not do anything
+# ran the following to try to force mamba to update. May not be needed in future
 mamba install mamba=1.4 -c conda-forge # got 1.4.2
-# conda create -n r_env r-essentials r-base
 mamba install -c conda-forge altair vega_datasets vega jupyterhub
 mamba install jupyterlab notebook sympy scipy matplotlib
 mamba install nbgrader -c conda-forge
 cd /opt/anaconda3/etc/jupyter
 jupyterhub --generate-config
 # edit the config created above and uncomment c.Authenticator.admin_users = ('rspence@tlu.edu','cberggren@tlu.edu')
+# don't run `adduser` as admin
 adduser rspence@tlu.edu --force-badname
 adduser cberggren@tlu.edu --force-badname
 
-# configure nbgrader extensions
-jupyter labextension disable --level=sys_prefix nbgrader/create_assignment
-jupyter labextension enable --level=user nbgrader/create_assignment
-jupyter labextension disable --level=sys_prefix nbgrader/formgrader
-jupyter server extension disable --sys-prefix nbgrader.server_extensions.formgrader
-jupyter labextension enable --level=user nbgrader/formgrader
-jupyter server extension enable --user --py nbgrader.server_extensions.formgrader
-jupyter labextension disable --level=sys_prefix nbgrader/validate_assignment
-jupyter server extension disable --sys-prefix nbgrader.server_extensions.validate_assignment
-jupyter labextension enable --level=user nbgrader/validate_assignment
-jupyter server extension enable --user --py nbgrader.server_extensions.validate_assignment
-
-# configure nbgrader
-nbgrader quickstart coursename
-mv coursename/nbgrader_config.py .jupyter/
-# in config, add: c.CourseDirectory.root = '/home/instructor/course101'
-mkdir /usr/local/share/nbgrader/exchange
-chmod ugo+rw /usr/local/share/nbgrader/exchange
-
+adduser grader-coursePHYS371 --force-badname
+adduser grader-coursePHYS241L --force-badname
