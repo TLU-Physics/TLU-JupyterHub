@@ -1,4 +1,5 @@
-# Server IP 40.119.49.252
+# Server IP 40.119.56.12
+# Ubuntu 20.04.6 LTS
 
 # TODO: add command to change the server time zone to Central
 apt update
@@ -8,7 +9,9 @@ echo "589fb34fe73bc303379abbceba50f3131254e85ce4e7cd819ba4276ba29cad16 Anaconda3
 sha256sum -c anaconda.sha256sum
 bash Anaconda3-2023.07-2-Linux-x86_64.sh -b -p /opt/anaconda3
 cd /opt/anaconda3/bin
+export PATH=/opt/anaconda3/bin:/opt/anaconda3/condabin:$PATH
 conda install mamba -c conda-forge -n base # got 1.2 last time
+conda install mamba -c conda-forge -n base --override-channels --yes
 mamba update mamba -c conda-forge # did not do anything
 # ran the following to try to force mamba to update. May not be needed in future
 mamba install mamba=1.4 -c conda-forge # got 1.4.2
