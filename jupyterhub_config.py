@@ -1,7 +1,5 @@
 # Configuration file for jupyterhub.
 
-c = get_config()  #noqa
-
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
 #------------------------------------------------------------------------------
@@ -19,53 +17,6 @@ c = get_config()  #noqa
 #  Choices: any of [0, 10, 20, 30, 40, 50, 'DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']
 #  Default: 30
 # c.Application.log_level = 30
-
-## Configure additional log handlers.
-#  
-#  The default stderr logs handler is configured by the log_level, log_datefmt
-#  and log_format settings.
-#  
-#  This configuration can be used to configure additional handlers (e.g. to
-#  output the log to a file) or for finer control over the default handlers.
-#  
-#  If provided this should be a logging configuration dictionary, for more
-#  information see:
-#  https://docs.python.org/3/library/logging.config.html#logging-config-
-#  dictschema
-#  
-#  This dictionary is merged with the base logging configuration which defines
-#  the following:
-#  
-#  * A logging formatter intended for interactive use called
-#    ``console``.
-#  * A logging handler that writes to stderr called
-#    ``console`` which uses the formatter ``console``.
-#  * A logger with the name of this application set to ``DEBUG``
-#    level.
-#  
-#  This example adds a new handler that writes to a file:
-#  
-#  .. code-block:: python
-#  
-#     c.Application.logging_config = {
-#         'handlers': {
-#             'file': {
-#                 'class': 'logging.FileHandler',
-#                 'level': 'DEBUG',
-#                 'filename': '<path/to/file>',
-#             }
-#         },
-#         'loggers': {
-#             '<application-name>': {
-#                 'level': 'DEBUG',
-#                 # NOTE: if you don't list the default "console"
-#                 # handler here then it will be disabled
-#                 'handlers': ['console', 'file'],
-#             },
-#         }
-#     }
-#  Default: {}
-# c.Application.logging_config = {}
 
 ## Instead of starting the Application, dump configuration to stdout
 #  Default: False
@@ -168,29 +119,6 @@ c = get_config()  #noqa
 #              e.g. `c.JupyterHub.authenticator_class = 'pam'`
 #  
 #  Currently installed: 
-#    - auth0: oauthenticator.auth0.Auth0OAuthenticator
-#    - azuread: oauthenticator.azuread.AzureAdOAuthenticator
-#    - bitbucket: oauthenticator.bitbucket.BitbucketOAuthenticator
-#    - cilogon: oauthenticator.cilogon.CILogonOAuthenticator
-#    - generic-oauth: oauthenticator.generic.GenericOAuthenticator
-#    - github: oauthenticator.github.GitHubOAuthenticator
-#    - gitlab: oauthenticator.gitlab.GitLabOAuthenticator
-#    - globus: oauthenticator.globus.GlobusOAuthenticator
-#    - google: oauthenticator.google.GoogleOAuthenticator
-#    - local-auth0: oauthenticator.auth0.LocalAuth0OAuthenticator
-#    - local-azuread: oauthenticator.azuread.LocalAzureAdOAuthenticator
-#    - local-bitbucket: oauthenticator.bitbucket.LocalBitbucketOAuthenticator
-#    - local-cilogon: oauthenticator.cilogon.LocalCILogonOAuthenticator
-#    - local-generic-oauth: oauthenticator.generic.LocalGenericOAuthenticator
-#    - local-github: oauthenticator.github.LocalGitHubOAuthenticator
-#    - local-gitlab: oauthenticator.gitlab.LocalGitLabOAuthenticator
-#    - local-globus: oauthenticator.globus.LocalGlobusOAuthenticator
-#    - local-google: oauthenticator.google.LocalGoogleOAuthenticator
-#    - local-okpy: oauthenticator.okpy.LocalOkpyOAuthenticator
-#    - local-openshift: oauthenticator.openshift.LocalOpenShiftOAuthenticator
-#    - mediawiki: oauthenticator.mediawiki.MWOAuthenticator
-#    - okpy: oauthenticator.okpy.OkpyOAuthenticator
-#    - openshift: oauthenticator.openshift.OpenShiftOAuthenticator
 #    - default: jupyterhub.auth.PAMAuthenticator
 #    - dummy: jupyterhub.auth.DummyAuthenticator
 #    - null: jupyterhub.auth.NullAuthenticator
@@ -581,10 +509,6 @@ c = get_config()  #noqa
 #  See also: Application.log_level
 # c.JupyterHub.log_level = 30
 
-## 
-#  See also: Application.logging_config
-# c.JupyterHub.logging_config = {}
-
 ## Specify path to a logo image to override the Jupyter logo in the banner.
 #  Default: ''
 # c.JupyterHub.logo_file = ''
@@ -639,7 +563,7 @@ c = get_config()  #noqa
 #          .. deprecated: 0.9
 #              Use JupyterHub.bind_url
 #  Default: 8000
-# c.JupyterHub.port = 8000
+c.JupyterHub.port = 443
 
 ## DEPRECATED since version 0.8 : Use ConfigurableHTTPProxy.api_url
 #  Default: ''
@@ -755,13 +679,13 @@ c = get_config()  #noqa
 #  
 #          When setting this, you should also set ssl_key
 #  Default: ''
-# c.JupyterHub.ssl_cert = ''
+c.JupyterHub.ssl_cert = '/opt/anaconda3/etc/jupyter/star_tlu_edu.pem'
 
 ## Path to SSL key file for the public facing interface of the proxy
 #  
 #          When setting this, you should also set ssl_cert
 #  Default: ''
-# c.JupyterHub.ssl_key = ''
+c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
 
 ## Host to send statsd metrics to. An empty string (the default) disables sending
 #  metrics.
@@ -1272,7 +1196,7 @@ c = get_config()  #noqa
 #  
 #  Defaults to an empty set, in which case no user has admin access.
 #  Default: set()
-# c.Authenticator.admin_users = set()
+c.Authenticator.admin_users = ('azureuser','rspence','cberggren','rspence@tlu.edu','cberggren@tlu.edu')
 
 ## Set of usernames that are allowed to log in.
 #  
@@ -1451,3 +1375,15 @@ c = get_config()  #noqa
 ## The number of threads to allocate for encryption
 #  Default: 2
 # c.CryptKeeper.n_threads = 2
+import os
+from oauthenticator.azuread import AzureAdOAuthenticator
+c.JupyterHub.authenticator_class = AzureAdOAuthenticator
+
+c.Application.log_level = 'DEBUG'
+
+c.AzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
+
+c.AzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
+c.AzureAdOAuthenticator.client_id = ''
+c.AzureAdOAuthenticator.client_secret = ''
+c.AzureAdOAuthenticator.username_claim = 'upn'
