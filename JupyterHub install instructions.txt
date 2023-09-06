@@ -8,6 +8,6 @@ conda install -c conda-forge jupyterhub
 conda install jupyterlab notebook
 cd /opt/anaconda3/etc/jupyter 
 jupyterhub --generate-config
-# edit the config created above and uncomment c.Authenticator.admin_users = ('rspence','cberggren')
-adduser rspence
-adduser cberggren
+# edit the config created above and uncomment c.Authenticator.admin_users = ('rspence@tlu.edu','cberggren@tlu.edu')
+adduser rspence@tlu.edu --force-badname
+adduser cberggren@tlu.edu --force-badname
