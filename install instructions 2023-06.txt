@@ -1,6 +1,4 @@
-# Server IP 40.119.49.252
-
-# TODO: add command to change the server time zone to Central
+# 40.119.49.252
 
 apt update
 apt upgrade
@@ -22,7 +20,6 @@ jupyterhub --generate-config
 adduser rspence@tlu.edu --force-badname
 adduser cberggren@tlu.edu --force-badname
 
-# configure nbgrader extensions
 jupyter labextension disable --level=sys_prefix nbgrader/create_assignment
 jupyter labextension enable --level=user nbgrader/create_assignment
 jupyter labextension disable --level=sys_prefix nbgrader/formgrader
@@ -34,10 +31,8 @@ jupyter server extension disable --sys-prefix nbgrader.server_extensions.validat
 jupyter labextension enable --level=user nbgrader/validate_assignment
 jupyter server extension enable --user --py nbgrader.server_extensions.validate_assignment
 
-# configure nbgrader
 nbgrader quickstart coursename
 mv coursename/nbgrader_config.py .jupyter/
 # in config, add: c.CourseDirectory.root = '/home/instructor/course101'
 mkdir /usr/local/share/nbgrader/exchange
 chmod ugo+rw /usr/local/share/nbgrader/exchange
-
