@@ -473,7 +473,18 @@
 #          set will not remove users or groups from previous launches.
 #          That must be done through the API.
 #  Default: {}
-# c.JupyterHub.load_groups = {}
+c.JupyterHub.load_groups = {
+        'formgrade-coursePHYS371': [
+            'cberggren@tlu.edu',
+            'grader-coursePHYS371'
+        ],
+        'formgrade-coursePHYS241L': [
+            'tsauncy@tlu.edu',
+            'grader-coursePHYS241L'
+        ],
+        'nbgrader-coursePHYS371': [],
+        'nbgrader-coursePHYS241L': []
+}
 
 ## List of predefined role dictionaries to load at startup.
 #  
@@ -646,7 +657,32 @@ c.JupyterHub.port = 443
 #                  }
 #              ]
 #  Default: []
-# c.JupyterHub.services = []
+c.JupyterHub.services = [
+        {
+            'name': 'coursePHYS371',
+            'url': 'http://127.0.0.1:9999',
+            'command': [
+                'jupyterhub-singleuser',
+                '--group=formgrade-coursePHYS371',
+                '--debug'
+            ],
+            'user': 'grader-coursePHYS371',
+            'cwd': '/home/grader-coursePHYS371',
+            'api_token': ''
+        },
+        {
+            'name': 'coursePHYS241L',
+            'url': 'http://127.0.0.1:9998',
+            'command': [
+                'jupyterhub-singleuser',
+                '--group=formgrade-coursePHYS241L',
+                '--debug'
+            ],
+            'user': 'grader-coursePHYS241L',
+            'cwd': '/home/grader-coursePHYS241L',
+            'api_token': ''
+        }
+]
 
 ## Instead of starting the Application, dump configuration to stdout
 #  See also: Application.show_config
@@ -1196,7 +1232,7 @@ c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
 #  
 #  Defaults to an empty set, in which case no user has admin access.
 #  Default: set()
-c.Authenticator.admin_users = ('azureuser','rspence','cberggren','rspence@tlu.edu','cberggren@tlu.edu')
+c.Authenticator.admin_users = ('azureuser','rspence','cberggren','rspence@tlu.edu','cberggren@tlu.edu', 'tsauncy@tlu.edu')
 
 ## Set of usernames that are allowed to log in.
 #  
@@ -1210,7 +1246,13 @@ c.Authenticator.admin_users = ('azureuser','rspence','cberggren','rspence@tlu.ed
 #  .. versionchanged:: 1.2
 #      `Authenticator.whitelist` renamed to `allowed_users`
 #  Default: set()
-# c.Authenticator.allowed_users = set()
+c.Authenticator.allowed_users = [
+        'cberggren@tlu.edu',
+        'tsauncy@tlu.edu',
+        'grader-coursePHYS371',
+        'grader-coursePHYS241L',
+        'rspence@tlu.edu',
+]
 
 ## The max age (in seconds) of authentication info
 #          before forcing a refresh of user auth info.
