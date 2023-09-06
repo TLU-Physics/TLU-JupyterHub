@@ -4,26 +4,18 @@
 # TODO: add command to change the server time zone to Central
 apt update
 apt upgrade
-wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh
-echo "589fb34fe73bc303379abbceba50f3131254e85ce4e7cd819ba4276ba29cad16 Anaconda3-2023.07-2-Linux-x86_64.sh" > anaconda.sha256sum
-sha256sum -c anaconda.sha256sum
-bash Anaconda3-2023.07-2-Linux-x86_64.sh -b -p /opt/anaconda3
-cd /opt/anaconda3/bin
-export PATH=/opt/anaconda3/bin:/opt/anaconda3/condabin:$PATH
-conda install mamba -c conda-forge -n base # got 1.2 last time
-conda install mamba -c conda-forge -n base --override-channels --yes
-mamba update mamba -c conda-forge # did not do anything
-# ran the following to try to force mamba to update. May not be needed in future
-mamba install mamba=1.4 -c conda-forge # got 1.4.2
-mamba install -c conda-forge altair vega_datasets vega jupyterhub
-mamba install jupyterlab notebook sympy scipy matplotlib
-mamba install nbgrader -c conda-forge
-cd /opt/anaconda3/etc/jupyter
-jupyterhub --generate-config
-# edit the config created above and uncomment c.Authenticator.admin_users = ('rspence@tlu.edu','cberggren@tlu.edu')
-# don't run `adduser` as admin
+# what should user directory permissions be?
 adduser rspence@tlu.edu --force-badname
 adduser cberggren@tlu.edu --force-badname
 
-adduser grader-coursePHYS371 --force-badname
-adduser grader-coursePHYS241L --force-badname
+wget "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh"
+bash Mambaforge-$(uname)-$(uname -m).sh -b -p /opt/mambaforge # has mamba 1.4.2, conda 23.3.1, python 3.10
+export PATH=/opt/mambaforge/bin:/opt/mambaforge/condabin:$PATH
+mamba init
+mamba update mamba # got 1.5.0
+mamba install anaconda -c anaconda # appears to be 2022.10 versions; mamba now 1.4.9
+mamba install altair vega_datasets vega jupyterhub nbgrader # jupyterhub 4.0.2; nbgrader 0.8.2
+cd /opt/mambaforge/etc/jupyter
+cp /home/cberggren\@tlu.edu/jupyterhub_config-2023-09.py ./jupyterhub_config.py
+jupyterhub token cberggren@tlu.edu # and copy into config file
+jupyterhub token tsauncy@tlu.edu # and copy into config file

@@ -1,8 +1,9 @@
 shutdown -r # restarts whole server
-# set AAD_TENANT_ID
-nohup /opt/anaconda3/bin/jupyterhub -f /opt/anaconda3/etc/jupyter/jupyterhub_config.py # starts JupyterHub
+# set AAD_TENANT_ID # needed for SSO
+nohup /opt/mambaforge/bin/jupyterhub -f /opt/mambaforge/etc/jupyter/jupyterhub_config.py # starts JupyterHub
 
 # the services that start and run on specific ports will cause some problems because they will be orphaned then JupyterHub is shutdown and will still be reserving the port they are on
+# ever since using JupyterHub 4.0.2, these orphaned processes are not there
 # list process associated with a specific port
 lsof -t -i:<service_port>
 # kill a process
