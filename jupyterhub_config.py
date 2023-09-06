@@ -7,6 +7,8 @@ c = get_config()
 # consider LocalAzureAdOAuthenticator instead which may allow the creation of user accounts on the system
 # from oauthenticator.azuread import AzureAdOAuthenticator
 # c.JupyterHub.authenticator_class = AzureAdOAuthenticator
+# Someone who was working with the local version of Azure AD had the following line included. I am not sure how much of this we need, but we might need a custom add user command at least to deal with the --force-badname issue
+# c.LocalAzureAdOAuthenticator.add_user_cmd =  ['adduser', '-q', '--gecos', '""', '--home', '/jupyter/USERNAME', '--disabled-password', '--force-badname']
 
 c.Application.log_level = 'DEBUG'
 
@@ -22,37 +24,105 @@ c.Application.log_level = 'DEBUG'
 # see https://jupyterhub.readthedocs.io/en/stable/tutorial/getting-started/authenticators-users-basics.html
 # c.LocalAuthenticator.create_system_users = True
 
-c.Authenticator.whitelist = [
+c.Authenticator.allowed_users = [
+    'rspence@tlu.edu',
     'cberggren@tlu.edu',
     'tsauncy@tlu.edu',
-    'grader-coursePHYS371',
-    'grader-coursePHYS241L',
-    'rspence@tlu.edu',
+    'grader-coursephys371',
+    'grader-coursephys241l',
+    'stud1@tlu.edu',
+    'aarcsalinas@tlu.edu',
+    'ajsilva@tlu.edu',
+    'hhernandez@tlu.edu',
+    'adrimartinez@tlu.edu',
+    'tmharrison@tlu.edu',
+    'jasacastro@tlu.edu'
 ]
 
 c.Authenticator.admin_users = [
     'azureuser',
     'rspence@tlu.edu',
-    'cberggren@tlu.edu',
-    'tsauncy@tlu.edu'
+    'cberggren@tlu.edu'
 ]
 
 c.JupyterHub.load_groups = {
-    'formgrade-coursePHYS371': {
-        'users': [
-            'cberggren@tlu.edu',
-            'grader-coursePHYS371'
-        ]
-    },
-    'formgrade-coursePHYS241L': {
-        'users': [
-            'tsauncy@tlu.edu',
-            'grader-coursePHYS241L'
-        ]
-    },
-    'nbgrader-coursePHYS371': {},
-    'nbgrader-coursePHYS241L': {}
+    'instructors': [
+        'cberggren@tlu.edu',
+        'tsauncy@tlu.edu',
+    ],
+    'formgrade-coursePHYS371': [
+        'cberggren@tlu.edu',
+        'grader-coursephys371',
+    ],
+    'formgrade-coursePHYS241L': [
+        'tsauncy@tlu.edu',
+        'grader-coursephys241l',
+    ],
+    'nbgrader-coursePHYS371': [
+        'cberggren@tlu.edu',
+        'stud1@tlu.edu',
+        'aarcsalinas@tlu.edu'
+    ],
+    'nbgrader-coursePHYS241L': [
+        'tsauncy@tlu.edu',
+        'ajsilva@tlu.edu',
+        'hhernandez@tlu.edu',
+        'adrimartinez@tlu.edu',
+        'tmharrison@tlu.edu',
+        'jasacastro@tlu.edu'
+    ],
 }
+
+c.JupyterHub.load_roles = roles = [
+    {
+        'name': 'instructor',
+        'groups': ['instructors'],
+        'scopes': [
+            # these are the scopes required for the admin UI
+            'admin:users',
+            'admin:servers',
+        ],
+    },
+    # The class_list extension needs permission to access services
+    {
+        'name': 'server',
+        'scopes': [
+            'inherit',
+            # in JupyterHub 2.4, this can be a list of permissions
+            # greater than the owner and the result will be the intersection;
+            # until then, 'inherit' is the only way to have variable permissions
+            # for the server token by user
+            # "access:services",
+            # "list:services",
+            # "read:services",
+            # "users:activity!user",
+            # "access:servers!user",
+        ],
+    },
+]
+for course in ['coursePHYS371', 'coursePHYS241L']:
+    # access to formgrader
+    roles.append(
+        {
+            'name': f'formgrade-{course.lower()}',
+            'groups': [f'formgrade-{course}'],
+            'scopes': [
+                f'access:services!service={course}',
+            ],
+        }
+    )
+    # access to course materials
+    roles.append(
+        {
+            'name': f'nbgrader-{course.lower()}',
+            'groups': [f'nbgrader-{course}'],
+            'scopes': [
+                # access to the services API to discover the service(s)
+                'list:services',
+                f'read:services!service={course}',
+            ],
+        }
+    )
 
 c.JupyterHub.services = [
     {
@@ -60,11 +130,14 @@ c.JupyterHub.services = [
         'url': 'http://127.0.0.1:9999',
         'command': [
             'jupyterhub-singleuser',
-            '--group=formgrade-coursePHYS371',
             '--debug'
         ],
-        'user': 'grader-coursePHYS371',
-        'cwd': '/home/grader-coursePHYS371',
+        'user': 'grader-coursephys371',
+        'cwd': '/home/grader-coursephys371',
+        'environment': {
+            # specify lab as default landing page
+            'JUPYTERHUB_DEFAULT_URL': '/lab'
+        },
         'api_token': ''
     },
     {
@@ -72,11 +145,14 @@ c.JupyterHub.services = [
         'url': 'http://127.0.0.1:9998',
         'command': [
             'jupyterhub-singleuser',
-            '--group=formgrade-coursePHYS241L',
             '--debug'
         ],
-        'user': 'grader-coursePHYS241L',
-        'cwd': '/home/grader-coursePHYS241L',
+        'user': 'grader-coursephys241l',
+        'cwd': '/home/grader-coursephys241l',
+        'environment': {
+            # specify lab as default landing page
+            'JUPYTERHUB_DEFAULT_URL': '/lab'
+        },
         'api_token': ''
     }
 ]

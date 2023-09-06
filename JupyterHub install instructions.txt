@@ -16,6 +16,6 @@ mamba update mamba # got 1.5.0
 mamba install anaconda -c anaconda # appears to be 2022.10 versions; mamba now 1.4.9
 mamba install altair vega_datasets vega jupyterhub nbgrader # jupyterhub 4.0.2; nbgrader 0.8.2
 cd /opt/mambaforge/etc/jupyter
-cp /home/cberggren\@tlu.edu/jupyterhub_config-2023-09.py ./jupyterhub_config.py
+cp /home/cberggren\@tlu.edu/jupyterhub_config-2023-09-v2.py ./jupyterhub_config.py
 jupyterhub token cberggren@tlu.edu # and copy into config file
 jupyterhub token tsauncy@tlu.edu # and copy into config file
