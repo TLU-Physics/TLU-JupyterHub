@@ -1,5 +1,7 @@
 # Configuration file for jupyterhub.
 
+c = get_config()  #noqa
+
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
 #------------------------------------------------------------------------------
@@ -17,6 +19,53 @@
 #  Choices: any of [0, 10, 20, 30, 40, 50, 'DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']
 #  Default: 30
 # c.Application.log_level = 30
+
+## Configure additional log handlers.
+#  
+#  The default stderr logs handler is configured by the log_level, log_datefmt
+#  and log_format settings.
+#  
+#  This configuration can be used to configure additional handlers (e.g. to
+#  output the log to a file) or for finer control over the default handlers.
+#  
+#  If provided this should be a logging configuration dictionary, for more
+#  information see:
+#  https://docs.python.org/3/library/logging.config.html#logging-config-
+#  dictschema
+#  
+#  This dictionary is merged with the base logging configuration which defines
+#  the following:
+#  
+#  * A logging formatter intended for interactive use called
+#    ``console``.
+#  * A logging handler that writes to stderr called
+#    ``console`` which uses the formatter ``console``.
+#  * A logger with the name of this application set to ``DEBUG``
+#    level.
+#  
+#  This example adds a new handler that writes to a file:
+#  
+#  .. code-block:: python
+#  
+#     c.Application.logging_config = {
+#         'handlers': {
+#             'file': {
+#                 'class': 'logging.FileHandler',
+#                 'level': 'DEBUG',
+#                 'filename': '<path/to/file>',
+#             }
+#         },
+#         'loggers': {
+#             '<application-name>': {
+#                 'level': 'DEBUG',
+#                 # NOTE: if you don't list the default "console"
+#                 # handler here then it will be disabled
+#                 'handlers': ['console', 'file'],
+#             },
+#         }
+#     }
+#  Default: {}
+# c.Application.logging_config = {}
 
 ## Instead of starting the Application, dump configuration to stdout
 #  Default: False
@@ -60,9 +109,11 @@
 #  Default: 30
 # c.JupyterHub.activity_resolution = 30
 
-## Grant admin users permission to access single-user servers.
+## DEPRECATED since version 2.0.0.
 #  
-#          Users should be properly informed if this is enabled.
+#          The default admin role has full permissions, use custom RBAC scopes instead to
+#          create restricted administrator roles.
+#          https://jupyterhub.readthedocs.io/en/stable/rbac/index.html
 #  Default: False
 # c.JupyterHub.admin_access = False
 
@@ -212,9 +263,27 @@
 #  Default: 'jupyterhub_cookie_secret'
 # c.JupyterHub.cookie_secret_file = 'jupyterhub_cookie_secret'
 
+## Custom scopes to define.
+#  
+#          For use when defining custom roles,
+#          to grant users granular permissions
+#  
+#          All custom scopes must have a description,
+#          and must start with the prefix `custom:`.
+#  
+#          For example::
+#  
+#              custom_scopes = {
+#                  "custom:jupyter_server:read": {
+#                      "description": "read-only access to a single-user server",
+#                  },
+#              }
+#  Default: {}
+# c.JupyterHub.custom_scopes = {}
+
 ## The location of jupyterhub data files (e.g. /usr/local/share/jupyterhub)
-#  Default: '/opt/anaconda3/share/jupyterhub'
-# c.JupyterHub.data_files_path = '/opt/anaconda3/share/jupyterhub'
+#  Default: '/opt/mambaforge/share/jupyterhub'
+# c.JupyterHub.data_files_path = '/opt/mambaforge/share/jupyterhub'
 
 ## Include any kwargs to pass to the database connection.
 #          See sqlalchemy.create_engine for details.
@@ -233,8 +302,13 @@
 #  Default: False
 # c.JupyterHub.debug_proxy = False
 
-## If named servers are enabled, default name of server to spawn or open, e.g. by
-#  user-redirect.
+## If named servers are enabled, default name of server to spawn or open when no
+#  server is specified, e.g. by user-redirect.
+#  
+#  Note: This has no effect if named servers are not enabled, and does _not_
+#  change the existence or behavior of the default server named `''` (the empty
+#  string). This only affects which named server is launched when no server is
+#  specified, e.g. by links to `/hub/user-redirect/lab/tree/mynotebook.ipynb`.
 #  Default: ''
 # c.JupyterHub.default_server_name = ''
 
@@ -276,11 +350,9 @@
 #  Default: {}
 # c.JupyterHub.external_ssl_authorities = {}
 
-## Register extra tornado Handlers for jupyterhub.
+## DEPRECATED.
 #  
-#  Should be of the form ``("<regex>", Handler)``
-#  
-#  The Hub prefix will be added, so `/my-page` will be served at `/hub/my-page`.
+#  If you need to register additional HTTP endpoints please use services instead.
 #  Default: []
 # c.JupyterHub.extra_handlers = []
 
@@ -293,6 +365,14 @@
 ## Extra log handlers to set on JupyterHub logger
 #  Default: []
 # c.JupyterHub.extra_log_handlers = []
+
+## Alternate header to use as the Host (e.g., X-Forwarded-Host)
+#          when determining whether a request is cross-origin
+#  
+#          This may be useful when JupyterHub is running behind a proxy that rewrites
+#          the Host header.
+#  Default: ''
+# c.JupyterHub.forwarded_host_header = ''
 
 ## Generate certs used for internal ssl
 #  Default: False
@@ -465,26 +545,29 @@
 #  Default: 300
 # c.JupyterHub.last_activity_interval = 300
 
-## Dict of 'group': ['usernames'] to load at startup.
+## Dict of `{'group': {'users':['usernames'], 'properties': {}}`  to load at
+#  startup.
 #  
-#          This strictly *adds* groups and users to groups.
+#  Example::
 #  
-#          Loading one set of groups, then starting JupyterHub again with a different
-#          set will not remove users or groups from previous launches.
-#          That must be done through the API.
+#      c.JupyterHub.load_groups = {
+#          'groupname': {
+#              'users': ['usernames'],
+#              'properties': {'key': 'value'},
+#          },
+#      }
+#  
+#  This strictly *adds* groups and users to groups. Properties, if defined,
+#  replace all existing properties.
+#  
+#  Loading one set of groups, then starting JupyterHub again with a different set
+#  will not remove users or groups from previous launches. That must be done
+#  through the API.
+#  
+#  .. versionchanged:: 3.2
+#    Changed format of group from list of usernames to dict
 #  Default: {}
-c.JupyterHub.load_groups = {
-        'formgrade-coursePHYS371': [
-            'cberggren@tlu.edu',
-            'grader-coursePHYS371'
-        ],
-        'formgrade-coursePHYS241L': [
-            'tsauncy@tlu.edu',
-            'grader-coursePHYS241L'
-        ],
-        'nbgrader-coursePHYS371': [],
-        'nbgrader-coursePHYS241L': []
-}
+# c.JupyterHub.load_groups = {}
 
 ## List of predefined role dictionaries to load at startup.
 #  
@@ -520,6 +603,10 @@ c.JupyterHub.load_groups = {
 #  See also: Application.log_level
 # c.JupyterHub.log_level = 30
 
+## 
+#  See also: Application.logging_config
+# c.JupyterHub.logging_config = {}
+
 ## Specify path to a logo image to override the Jupyter logo in the banner.
 #  Default: ''
 # c.JupyterHub.logo_file = ''
@@ -530,6 +617,18 @@ c.JupyterHub.load_groups = {
 #  Setting this can limit the total resources a user can consume.
 #  
 #  If set to 0, no limit is enforced.
+#  
+#  Can be an integer or a callable/awaitable based on the handler object:
+#  
+#  ::
+#  
+#      def named_server_limit_per_user_fn(handler):
+#          user = handler.current_user
+#          if user and user.admin:
+#              return 0
+#          return 5
+#  
+#      c.JupyterHub.named_server_limit_per_user = named_server_limit_per_user_fn
 #  Default: 0
 # c.JupyterHub.named_server_limit_per_user = 0
 
@@ -574,7 +673,7 @@ c.JupyterHub.load_groups = {
 #          .. deprecated: 0.9
 #              Use JupyterHub.bind_url
 #  Default: 8000
-c.JupyterHub.port = 443
+# c.JupyterHub.port = 8000
 
 ## DEPRECATED since version 0.8 : Use ConfigurableHTTPProxy.api_url
 #  Default: ''
@@ -657,32 +756,7 @@ c.JupyterHub.port = 443
 #                  }
 #              ]
 #  Default: []
-c.JupyterHub.services = [
-        {
-            'name': 'coursePHYS371',
-            'url': 'http://127.0.0.1:9999',
-            'command': [
-                'jupyterhub-singleuser',
-                '--group=formgrade-coursePHYS371',
-                '--debug'
-            ],
-            'user': 'grader-coursePHYS371',
-            'cwd': '/home/grader-coursePHYS371',
-            'api_token': ''
-        },
-        {
-            'name': 'coursePHYS241L',
-            'url': 'http://127.0.0.1:9998',
-            'command': [
-                'jupyterhub-singleuser',
-                '--group=formgrade-coursePHYS241L',
-                '--debug'
-            ],
-            'user': 'grader-coursePHYS241L',
-            'cwd': '/home/grader-coursePHYS241L',
-            'api_token': ''
-        }
-]
+# c.JupyterHub.services = []
 
 ## Instead of starting the Application, dump configuration to stdout
 #  See also: Application.show_config
@@ -715,13 +789,13 @@ c.JupyterHub.services = [
 #  
 #          When setting this, you should also set ssl_key
 #  Default: ''
-c.JupyterHub.ssl_cert = '/opt/anaconda3/etc/jupyter/star_tlu_edu.pem'
+# c.JupyterHub.ssl_cert = ''
 
 ## Path to SSL key file for the public facing interface of the proxy
 #  
 #          When setting this, you should also set ssl_cert
 #  Default: ''
-c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
+# c.JupyterHub.ssl_key = ''
 
 ## Host to send statsd metrics to. An empty string (the default) disables sending
 #  metrics.
@@ -1078,7 +1152,24 @@ c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
 #  Default: ''
 # c.Spawner.notebook_dir = ''
 
+## Allowed scopes for oauth tokens issued by this server's oauth client.
+#  
+#          This sets the maximum and default scopes
+#          assigned to oauth tokens issued by a single-user server's
+#          oauth client (i.e. tokens stored in browsers after authenticating with the server),
+#          defining what actions the server can take on behalf of logged-in users.
+#  
+#          Default is an empty list, meaning minimal permissions to identify users,
+#          no actions can be taken on their behalf.
+#  
+#          If callable, will be called with the Spawner as a single argument.
+#          Callables may be async.
+#  Default: traitlets.Undefined
+# c.Spawner.oauth_client_allowed_scopes = traitlets.Undefined
+
 ## Allowed roles for oauth tokens.
+#  
+#          Deprecated in 3.0: use oauth_client_allowed_scopes
 #  
 #          This sets the maximum and default roles
 #          assigned to oauth tokens issued by a single-user server's
@@ -1191,6 +1282,21 @@ c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
 #  Default: None
 # c.Spawner.pre_spawn_hook = None
 
+## The list of scopes to request for $JUPYTERHUB_API_TOKEN
+#  
+#          If not specified, the scopes in the `server` role will be used
+#          (unchanged from pre-4.0).
+#  
+#          If callable, will be called with the Spawner instance as its sole argument
+#          (JupyterHub user available as spawner.user).
+#  
+#          JUPYTERHUB_API_TOKEN will be assigned the _subset_ of these scopes
+#          that are held by the user (as in oauth_client_allowed_scopes).
+#  
+#          .. versionadded:: 4.0
+#  Default: traitlets.Undefined
+# c.Spawner.server_token_scopes = traitlets.Undefined
+
 ## List of SSL alt names
 #  
 #          May be set in config if all spawners should have the same value(s),
@@ -1198,7 +1304,7 @@ c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
 #  Default: []
 # c.Spawner.ssl_alt_names = []
 
-## Whether to include DNS:localhost, IP:127.0.0.1 in alt names
+## Whether to include `DNS:localhost`, `IP:127.0.0.1` in alt names
 #  Default: True
 # c.Spawner.ssl_alt_names_include_local = True
 
@@ -1232,7 +1338,7 @@ c.JupyterHub.ssl_key = '/opt/anaconda3/etc/jupyter/star_tlu_edu.key'
 #  
 #  Defaults to an empty set, in which case no user has admin access.
 #  Default: set()
-c.Authenticator.admin_users = ('azureuser','rspence','cberggren','rspence@tlu.edu','cberggren@tlu.edu', 'tsauncy@tlu.edu')
+# c.Authenticator.admin_users = set()
 
 ## Set of usernames that are allowed to log in.
 #  
@@ -1246,13 +1352,7 @@ c.Authenticator.admin_users = ('azureuser','rspence','cberggren','rspence@tlu.ed
 #  .. versionchanged:: 1.2
 #      `Authenticator.whitelist` renamed to `allowed_users`
 #  Default: set()
-c.Authenticator.allowed_users = [
-        'cberggren@tlu.edu',
-        'tsauncy@tlu.edu',
-        'grader-coursePHYS371',
-        'grader-coursePHYS241L',
-        'rspence@tlu.edu',
-]
+# c.Authenticator.allowed_users = set()
 
 ## The max age (in seconds) of authentication info
 #          before forcing a refresh of user auth info.
@@ -1340,6 +1440,16 @@ c.Authenticator.allowed_users = [
 #  Default: False
 # c.Authenticator.enable_auth_state = False
 
+## Let authenticator manage user groups
+#  
+#          If True, Authenticator.authenticate and/or .refresh_user
+#          may return a list of group names in the 'groups' field,
+#          which will be assigned to the user.
+#  
+#          All group-assignment APIs are disabled if this is True.
+#  Default: False
+# c.Authenticator.manage_groups = False
+
 ## An optional hook function that you can implement to do some bootstrapping work
 #  during authentication. For example, loading user account details from an
 #  external system.
@@ -1417,15 +1527,3 @@ c.Authenticator.allowed_users = [
 ## The number of threads to allocate for encryption
 #  Default: 2
 # c.CryptKeeper.n_threads = 2
-import os
-from oauthenticator.azuread import AzureAdOAuthenticator
-c.JupyterHub.authenticator_class = AzureAdOAuthenticator
-
-c.Application.log_level = 'DEBUG'
-
-c.AzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
-
-c.AzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
-c.AzureAdOAuthenticator.client_id = ''
-c.AzureAdOAuthenticator.client_secret = ''
-c.AzureAdOAuthenticator.username_claim = 'upn'
