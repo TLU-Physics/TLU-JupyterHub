@@ -34,15 +34,17 @@ adduser stud1@tlu.edu --force-badname
 sudo -u grader-coursephys371 /opt/mambaforge/bin/nbgrader quickstart coursePHYS371
 sudo -u grader-coursephys371 mkdir .jupyter
 sudo -u grader-coursephys371 cp /home/cberggren\@tlu.edu/nbgrader_config-phys371.py ./.jupyter/nbgrader_config.py
-# chown -R grader-coursephys371:grader-coursephys371 .jupyter coursePHYS371 gradebook.db
 
 sudo -u grader-coursephys241l /opt/mambaforge/bin/nbgrader quickstart coursePHYS241L
 sudo -u grader-coursephys241l mkdir .jupyter
 sudo -u grader-coursephys241l cp /home/cberggren\@tlu.edu/nbgrader_config-phys241l.py ./.jupyter/nbgrader_config.py
-# chown -R grader-coursePHYS241L:grader-coursePHYS241L .jupyter coursePHYS241L gradebook.db
 
 cd /usr/local/share
 mkdir jupyter
 cd jupyter
 echo "" > nbgrader.log
 chmod 666 nbgrader.log
+
+# create various user directories
+# update user lists inside the following script
+./configure_nbgrader_extensions.sh
