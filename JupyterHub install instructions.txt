@@ -19,3 +19,30 @@ cd /opt/mambaforge/etc/jupyter
 cp /home/cberggren\@tlu.edu/jupyterhub_config-2023-09-v2.py ./jupyterhub_config.py
 jupyterhub token cberggren@tlu.edu # and copy into config file
 jupyterhub token tsauncy@tlu.edu # and copy into config file
+
+### Setup for nbgrader for 2 classes
+
+mkdir -p /usr/local/share/nbgrader/exchange
+chmod ugo+rw /usr/local/share/nbgrader/exchange
+
+mkdir /etc/jupyter
+cp /home/cberggren\@tlu.edu/nbgrader_config-etc.py /etc/jupyter/nbgrader_config.py
+adduser grader-coursephys371 --force-badname
+adduser grader-coursephys241l --force-badname
+adduser stud1@tlu.edu --force-badname
+
+sudo -u grader-coursephys371 /opt/mambaforge/bin/nbgrader quickstart coursePHYS371
+sudo -u grader-coursephys371 mkdir .jupyter
+sudo -u grader-coursephys371 cp /home/cberggren\@tlu.edu/nbgrader_config-phys371.py ./.jupyter/nbgrader_config.py
+# chown -R grader-coursephys371:grader-coursephys371 .jupyter coursePHYS371 gradebook.db
+
+sudo -u grader-coursephys241l /opt/mambaforge/bin/nbgrader quickstart coursePHYS241L
+sudo -u grader-coursephys241l mkdir .jupyter
+sudo -u grader-coursephys241l cp /home/cberggren\@tlu.edu/nbgrader_config-phys241l.py ./.jupyter/nbgrader_config.py
+# chown -R grader-coursePHYS241L:grader-coursePHYS241L .jupyter coursePHYS241L gradebook.db
+
+cd /usr/local/share
+mkdir jupyter
+cd jupyter
+echo "" > nbgrader.log
+chmod 666 nbgrader.log
