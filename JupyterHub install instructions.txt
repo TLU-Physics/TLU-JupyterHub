@@ -1,7 +1,13 @@
 wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
-bash Anaconda3-2021.11-Linux-x86_64.sh
+sha256sum -c anaconda.sha256sum # the checksum file is in /home/azureuser
+bash Anaconda3-2021.11-Linux-x86_64.sh -b -p /opt/anaconda3
 conda update conda
 conda create -n r_env r-essentials r-base
 conda install -c conda-forge altair vega_datasets vega
 conda install -c conda-forge jupyterhub
 conda install jupyterlab notebook
+cd /opt/anaconda3/etc/jupyter 
+jupyterhub --generate-config
+# edit the config created above and uncomment c.Authenticator.admin_users = ('rspence','cberggren')
+adduser rspence
+adduser cberggren
