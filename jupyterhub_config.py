@@ -1,28 +1,27 @@
 c = get_config()
 
-# c.JupyterHub.port = 443
-# c.JupyterHub.ssl_cert = '/opt/mambaforge/etc/jupyter/star_tlu_edu.pem'
-# c.JupyterHub.ssl_key = '/opt/mambaforge/etc/jupyter/star_tlu_edu.key'
+c.JupyterHub.port = 443
+c.JupyterHub.ssl_cert = '/opt/mambaforge/etc/jupyter/star_tlu_edu.pem'
+c.JupyterHub.ssl_key = '/opt/mambaforge/etc/jupyter/star_tlu_edu.key'
 
 # consider LocalAzureAdOAuthenticator instead which may allow the creation of user accounts on the system
-# from oauthenticator.azuread import AzureAdOAuthenticator
-# c.JupyterHub.authenticator_class = AzureAdOAuthenticator
-# Someone who was working with the local version of Azure AD had the following line included. I am not sure how much of this we need, but we might need a custom add user command at least to deal with the --force-badname issue
-# c.LocalAzureAdOAuthenticator.add_user_cmd =  ['adduser', '-q', '--gecos', '""', '--home', '/jupyter/USERNAME', '--disabled-password', '--force-badname']
+import os
+from oauthenticator.azuread import AzureAdOAuthenticator
+c.JupyterHub.authenticator_class = AzureAdOAuthenticator
 
 c.Application.log_level = 'DEBUG'
 
-# import os
-# c.AzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
-
-# c.AzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
-# c.AzureAdOAuthenticator.client_id = ''
-# c.AzureAdOAuthenticator.client_secret = ''
-# c.AzureAdOAuthenticator.username_claim = 'upn'
+c.AzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
+c.AzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
+c.AzureAdOAuthenticator.client_id = ''
+c.AzureAdOAuthenticator.client_secret = ''
+c.AzureAdOAuthenticator.username_claim = 'upn'
 
 # This may allow the system to create users automatically at login
 # see https://jupyterhub.readthedocs.io/en/stable/tutorial/getting-started/authenticators-users-basics.html
 # c.LocalAuthenticator.create_system_users = True
+# Someone who was working with the local version of Azure AD had the following line included. I am not sure how much of this we need, but we might need a custom add user command at least to deal with the --force-badname issue
+# c.LocalAzureAdOAuthenticator.add_user_cmd =  ['adduser', '-q', '--gecos', '""', '--home', '/jupyter/USERNAME', '--disabled-password', '--force-badname']
 
 c.Authenticator.allowed_users = [
     'rspence@tlu.edu',
