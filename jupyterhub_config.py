@@ -6,37 +6,37 @@ c.JupyterHub.ssl_key = '/opt/mambaforge/etc/jupyter/star_tlu_edu.key'
 
 # consider LocalAzureAdOAuthenticator instead which may allow the creation of user accounts on the system
 import os
-from oauthenticator.azuread import AzureAdOAuthenticator
-c.JupyterHub.authenticator_class = AzureAdOAuthenticator
+from oauthenticator.azuread import LocalAzureAdOAuthenticator
+c.JupyterHub.authenticator_class = LocalAzureAdOAuthenticator
 
 c.Application.log_level = 'DEBUG'
 
-c.AzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
-c.AzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
-c.AzureAdOAuthenticator.client_id = ''
-c.AzureAdOAuthenticator.client_secret = ''
-c.AzureAdOAuthenticator.username_claim = 'upn'
+c.LocalAzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
+c.LocalAzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
+c.LocalAzureAdOAuthenticator.client_id = ''
+c.LocalAzureAdOAuthenticator.client_secret = ''
+c.LocalAzureAdOAuthenticator.username_claim = 'upn'
 
 # This may allow the system to create users automatically at login
 # see https://jupyterhub.readthedocs.io/en/stable/tutorial/getting-started/authenticators-users-basics.html
-# c.LocalAuthenticator.create_system_users = True
+c.LocalAuthenticator.create_system_users = True
 # Someone who was working with the local version of Azure AD had the following line included. I am not sure how much of this we need, but we might need a custom add user command at least to deal with the --force-badname issue
-# c.LocalAzureAdOAuthenticator.add_user_cmd =  ['adduser', '-q', '--gecos', '""', '--home', '/jupyter/USERNAME', '--disabled-password', '--force-badname']
+c.LocalAzureAdOAuthenticator.add_user_cmd =  ['adduser', '--gecos', '""', '--disabled-password', '--force-badname']
 
-c.Authenticator.allowed_users = [
-    'rspence@tlu.edu',
-    'cberggren@tlu.edu',
-    'tsauncy@tlu.edu',
-    'grader-coursephys371',
-    'grader-coursephys241l',
-    'stud1@tlu.edu',
-    'aarcsalinas@tlu.edu',
-    'ajsilva@tlu.edu',
-    'hhernandez@tlu.edu',
-    'adrimartinez@tlu.edu',
-    'tmharrison@tlu.edu',
-    'jasacastro@tlu.edu'
-]
+# c.Authenticator.allowed_users = [
+#     'rspence@tlu.edu',
+#     'cberggren@tlu.edu',
+#     'tsauncy@tlu.edu',
+#     'grader-coursephys371',
+#     'grader-coursephys241l',
+#     'stud1@tlu.edu',
+#     'aarcsalinas@tlu.edu',
+#     'ajsilva@tlu.edu',
+#     'hhernandez@tlu.edu',
+#     'adrimartinez@tlu.edu',
+#     'tmharrison@tlu.edu',
+#     'jasacastro@tlu.edu'
+# ]
 
 c.Authenticator.admin_users = [
     'azureuser',
@@ -44,6 +44,7 @@ c.Authenticator.admin_users = [
     'cberggren@tlu.edu'
 ]
 
+# TODO: this format for groups is deprecated
 c.JupyterHub.load_groups = {
     'instructors': [
         'cberggren@tlu.edu',

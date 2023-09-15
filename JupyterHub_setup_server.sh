@@ -30,8 +30,8 @@ mkdir /etc/jupyter
 cd /etc/jupyter
 wget https://raw.githubusercontent.com/TLU-Physics/TLU-JupyterHub/main/nbgrader_config-etc.py
 mv nbgrader_config-etc.py nbgrader_config.py
-adduser grader-coursephys371 --force-badname
-adduser grader-coursephys241l --force-badname
+adduser grader-coursephys371 --gecos "" --disabled-password --force-badname
+adduser grader-coursephys241l --gecos "" --disabled-password --force-badname
 
 cd /home/grader-coursephys371
 sudo -u grader-coursephys371 /opt/mambaforge/bin/nbgrader quickstart coursePHYS371
@@ -54,13 +54,13 @@ echo "" > nbgrader.log
 chmod 666 nbgrader.log
 
 # create various user directories
-adduser tsauncy@tlu.edu --force-badname
-adduser stud1@tlu.edu --force-badname
-adduser aarcsalinas@tlu.edu --force-badname
-adduser ajsilva@tlu.edu --force-badname
-adduser hhernandez@tlu.edu --force-badname
-adduser adrimartinez@tlu.edu --force-badname
-adduser tmharrison@tlu.edu --force-badname
-adduser jasacastro@tlu.edu --force-badname
+adduser tsauncy@tlu.edu --gecos "" --disabled-password --force-badname
+adduser stud1@tlu.edu --gecos "" --disabled-password --force-badname
+adduser aarcsalinas@tlu.edu --gecos "" --disabled-password --force-badname
+adduser ajsilva@tlu.edu --gecos "" --disabled-password --force-badname
+adduser hhernandez@tlu.edu --gecos "" --disabled-password --force-badname
+adduser adrimartinez@tlu.edu --gecos "" --disabled-password --force-badname
+adduser tmharrison@tlu.edu --gecos "" --disabled-password --force-badname
+adduser jasacastro@tlu.edu --gecos "" --disabled-password --force-badname
 
 ./configure_nbgrader_extensions.sh
