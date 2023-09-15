@@ -13,8 +13,8 @@ c.Application.log_level = 'DEBUG'
 
 c.LocalAzureAdOAuthenticator.tenant_id = os.environ.get('AAD_TENANT_ID')
 c.LocalAzureAdOAuthenticator.oauth_callback_url = 'https://jupyter.tlu.edu/hub/oauth_callback'
-c.LocalAzureAdOAuthenticator.client_id = ''
-c.LocalAzureAdOAuthenticator.client_secret = ''
+c.LocalAzureAdOAuthenticator.client_id = os.environ.get('AAD_JH_CLIENT_ID')
+c.LocalAzureAdOAuthenticator.client_secret = os.environ.get('AAD_JH_CLIENT_SECRET')
 c.LocalAzureAdOAuthenticator.username_claim = 'upn'
 
 # This may allow the system to create users automatically at login
