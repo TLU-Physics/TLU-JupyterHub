@@ -5,7 +5,7 @@ set -e
 
 apt update
 apt upgrade -y
-# TODO: add command to change the server time zone to Central
+timedatectl set-timezone America/Chicago
 
 # install mambaforge and needed packages
 wget "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh"
