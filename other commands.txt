@@ -2,6 +2,21 @@ shutdown -r # restarts whole server
 # set AAD_TENANT_ID # needed for SSO
 nohup /opt/mambaforge/bin/jupyterhub -f /opt/mambaforge/etc/jupyter/jupyterhub_config.py # starts JupyterHub
 
+# to setup a new class
+# in jupyterhub_config file
+#     add students to list of allowed users
+#         allowed users should not be necessary, but it was giving me problems at some point to not have them
+#     add instructor to instructor list (can be done from Hub Control Panel)
+#     add new formgrade group (can be done from Hub Control Panel)
+#     add new nbgrader group (can be done from Hub Control Panel)
+#     add course name to foreach loop that assigns roles
+#     add new service for the course
+#         create new token for instructor and include it here
+# follow steps shown in JupyterHub_setup_server.sh for setting up a class
+#     update the names inside the nbgrader_config file
+# run the configure_nbgrader_extensions script with the new instructors and students and courses
+# shutdown hub and then start again
+
 # the services that start and run on specific ports will cause some problems because they will be orphaned then JupyterHub is shutdown and will still be reserving the port they are on
 # ever since using JupyterHub 4.0.2, these orphaned processes are not there
 # list process associated with a specific port

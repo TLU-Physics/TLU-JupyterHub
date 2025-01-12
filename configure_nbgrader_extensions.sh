@@ -2,7 +2,7 @@
 
 set -e
 
-source utils.sh
+source nbgrader_utils.sh
 
 # Install global extensions, and disable them globally. We will re-enable
 # specific ones for different user accounts in each demo.
