@@ -4,6 +4,9 @@ c.JupyterHub.port = 443
 c.JupyterHub.ssl_cert = '/opt/mambaforge/etc/jupyter/star_tlu_edu.pem'
 c.JupyterHub.ssl_key = '/opt/mambaforge/etc/jupyter/star_tlu_edu.key'
 
+# see https://github.com/jupyterhub/jupyterhub/issues/2541 for recommendations about configure JupyterHub to restart with minimal disruption
+c.JupyterHub.cleanup_servers = False
+
 # consider LocalAzureAdOAuthenticator instead which may allow the creation of user accounts on the system
 import os
 from oauthenticator.azuread import LocalAzureAdOAuthenticator

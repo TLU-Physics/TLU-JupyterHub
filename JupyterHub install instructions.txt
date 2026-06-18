@@ -7,3 +7,4 @@ adduser cberggren@tlu.edu --force-badname
 jupyterhub token cberggren@tlu.edu # and copy into config file
 jupyterhub token tsauncy@tlu.edu # and copy into config file
 # on 9/2024, it did not work to create a token on Tek's behalf and use it. Then, I had her generate one via the UI, put that into the config and it worked. It also does not seem to matter which user the token is generated on behalf of.
+# I could try this again now that I know which folder you have to launch JupyterHub from. Perhaps make sure that this command is run from /opt/mambaforge/etc/jupyter/.

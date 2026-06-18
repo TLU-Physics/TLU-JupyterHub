@@ -1,6 +1,7 @@
 shutdown -r # restarts whole server
 # set AAD_TENANT_ID # needed for SSO
 nohup /opt/mambaforge/bin/jupyterhub -f /opt/mambaforge/etc/jupyter/jupyterhub_config.py # starts JupyterHub
+# run this from the /opt/mambaforge/etc/jupyter/ directory - it makes a difference which directory you launch it from
 
 # to setup a new class
 # in jupyterhub_config file
@@ -16,6 +17,8 @@ nohup /opt/mambaforge/bin/jupyterhub -f /opt/mambaforge/etc/jupyter/jupyterhub_c
 #     update the names inside the nbgrader_config file
 # run the configure_nbgrader_extensions script with the new instructors and students and courses
 # shutdown hub and then start again
+# I setup a course (PHYS371 in 2025sp) using the Hub Control Panel, but later when the entire server was restarted, these groups did not exist, and I had to recreate them. Restarting JupyterHub does not cause a problem, but restarting the entire server did.
+#     on further investigation, it appears to matter which folder you are in when you launch the server. It must save state in files somewhere in the pwd. When launching from a different folder, it was not aware of users and groups I had added in the Hub Control Panel. It was also not aware of tokens I had created, meaning nbgrader form grader loaded with an error. When launching the Hub from the original folder, it regained awareness of the users, groups, and tokens.
 
 # the services that start and run on specific ports will cause some problems because they will be orphaned then JupyterHub is shutdown and will still be reserving the port they are on
 # ever since using JupyterHub 4.0.2, these orphaned processes are not there
